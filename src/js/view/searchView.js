@@ -9,7 +9,6 @@ social_rank: 100
 source_url: "http://www.101cookbooks.com/archives/001199.html"
 title: "Best Pizza Dough Ever*/
 const renderRecipe = recipe => {
-    console.log(recipe)
     const markup = `
                 <li>
                     <a class="results__link" href="#${recipe.recipe_id}">
@@ -30,8 +29,19 @@ const renderRecipe = recipe => {
 
 export const getInput = () => elements.searchInput.value;
 
-export const renderRecipes = recipes => {
-    recipes.forEach(renderRecipe);
+export const renderRecipes = (recipes, currentPage = 1, resPerPage = 10) => {
+    // жишээ нь: page = 2 үед start = 10, end = 20
+    // Массив-д байгаа хоолнуудаас хэдээс нь эхэлж гаргахыг тооцооло
+    const start = (currentPage - 1) * resPerPage;
+    // хэд хүртэл нь гаргахыг тооцоолох
+    const end = currentPage * resPerPage
+
+    recipes.slice(start, end).forEach(renderRecipe);
+
+    // Хуудаслалтын товчуудыг гаргаж үзүүлэх
+    // 4.2 ==> 5
+    const totalPages = Math.ceil(recipes.length / resPerPage);
+    renderButtons(currentPage, totalPages);
 }
 
 export const clearSearchQuery = () => {
@@ -39,4 +49,30 @@ export const clearSearchQuery = () => {
 }
 export const clearSearchResult = () => {
     elements.searchResultList.innerHTML = '';
+    elements.pageButtons.innerHTML = '';
+}
+// type ===> 'prev', 'next'
+const createButton = (page, type, direction) => `<button class="btn-inline results__btn--${type}" data-goto= ${page}>
+                    <svg class="search__icon">
+                        <use href="img/icons.svg#icon-triangle-${direction}"></use>
+                    </svg>
+                    <span>Хуудас ${page}</span>
+                </button>`;
+
+const renderButtons = (currentPage, totalPages) => {
+    let buttonHtml;
+    if (currentPage === 1 && totalPages > 1) {
+        // 1-р хуудсан дээр байна, 2-р хуудас гэдэг товчийг гаргана
+        buttonHtml = createButton(2, "next", 'right');
+    }
+    else if (currentPage < totalPages) {
+        // Өмнөх болон дараачийн хуудас руу шилжүүлэх товчуудыг үзүүлнэ
+        buttonHtml = createButton(currentPage - 1, "prev", 'left');
+        buttonHtml += createButton(currentPage + 1, "next", 'right');
+    }
+    else if (currentPage === totalPages) {
+        // Хамгийн сүүлийн хуудас дээр байна. Өмнөх рүү шилжүүлэх товчийг л үзүүлнэ
+        buttonHtml = createButton(currentPage - 1, "prev", 'left');
+    }
+    elements.pageButtons.insertAdjacentHTML("afterbegin", buttonHtml);
 }

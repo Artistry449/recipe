@@ -5,7 +5,6 @@ export default class Search {
         this.query = query;
     }
 
-
     async doSearch(search) {
         try {
             let result = await axios('https://forkify-api.herokuapp.com/api/search?q=' + this.query);
