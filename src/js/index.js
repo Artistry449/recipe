@@ -8,18 +8,17 @@ import List from "./model/List";
 import * as listView from "./view/listView";
 import Like from './model/Like';
 import * as likesView from './view/likesView';
+
 /*
  * Web app төлөв
  * - Хайлтын query, үр дүн
  * - Тухайн үзүүлж байгаа жор
  * - Лайкласан жорууд
  * - Захиалж байгаа жорын найрлаганууд
- */
+*/
 
 const state = {};
 
-// эхлэх үед favourites icon-ийг арилгах
-likesView.toggleLikeMenu(0);
 const controlSearch = async () => {
     // 1) Вэбээс хайлтын түлхүүр үгийг гаргаж авна.
     const query = searchView.getInput();
@@ -60,7 +59,6 @@ elements.pageButtons.addEventListener("click", e => {
 
 // Жорын контроллер
 const controlRecipe = async () => {
-    if (!state.likes) state.likes = new Like();
     // 1. URL-аас ID-г салгаж авна
     const id = window.location.hash.replace('#', '');
 
@@ -90,6 +88,17 @@ const controlRecipe = async () => {
 // window.addEventListener('load', controlRecipe);
 
 ['hashchange', 'load'].forEach(e => window.addEventListener(e, controlRecipe));
+
+window.addEventListener("load", e => {
+    // Шинээр like моделийг апп дөнгөж ачааллагдахад үүсгэнэ
+    if (!state.likes) state.likes = new Like();
+
+    // эхлэх үед favourites icon-ийг гаргах эсэхийг шийдэх
+    likesView.toggleLikeMenu(state.likes.getNumberOfLikes());
+
+    // Лайкууд байвалл тэдгээрийг цэсэнд нэмж харуулна
+    state.likes.likes.forEach(like => likesView.renderLike(like));
+});
 
 // Найрлаганы контроллер
 
@@ -156,7 +165,7 @@ const controlLike = () => {
         // Лайк товчийг гаргаж ирэх
         likesView.toggleLikeBtn(true);
     }
-    likesView.toggleLikeMenu(state.likes.getNumberofLikes())
+    likesView.toggleLikeMenu(state.likes.getNumberOfLikes())
 }
 
 elements.shoppingList.addEventListener('click', e => {
