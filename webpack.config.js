@@ -1,14 +1,15 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
-
+// production mode-nd oruulhiin tuld mode hesgee avj hayaad
+// inline-source-map-iig avj hayah
 module.exports = {
-    mode: 'development',
+    // mode: 'development',
     entry: './src/js/index.js',
     output: {
         filename: 'js/main.js',
         path: path.resolve(__dirname, 'docs'),
     },
-    devtool: 'inline-source-map',
+    // devtool: 'inline-source-map',
     devServer: {
         static: './docs',
     },
